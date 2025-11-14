@@ -168,7 +168,13 @@ jobs:
       if: github.event.inputs.enable_wifi == 'true'
       run: |
         cd openwrt
-        sed -i 's/disabled=1/disabled=0/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+        WIFI_FILE="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
+        if [ -f "$WIFI_FILE" ]; then
+          echo "找到 $WIFI_FILE，正在启用 WiFi..."
+          sed -i 's/disabled=1/disabled=0/g' "$WIFI_FILE"
+        else
+          echo "警告：未找到 $WIFI_FILE，跳过启用 WiFi 步骤（此架构可能不支持或路径不同）。"
+        fi
 
     - name: SSH 连接到 Actions
       uses: P3TERX/ssh2actions@v1.0.0
